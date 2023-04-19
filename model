@@ -1,0 +1,28 @@
+import torch
+from torchvision.models import resnet50
+import torch.nn as nn
+
+model = resnet50()
+
+def to_tensor(img):
+    img = torch.tensor(img, dtype=torch.float32)
+    img = img.permute(2, 0, 1).contiguous()
+    img = img.unsqueeze(0)
+    return img
+
+class Classifies_model(nn.Module):
+    def __init__(self):
+        super(Classifies_model, self).__init__()
+        self.main_model = nn.Sequential(*list(model.children())[:-1])
+        self.classifies_layer = nn.Sequential(nn.Linear(2048,1024),
+                                              nn.ReLU(),
+                                              nn.Linear(1024,256),
+                                              nn.ReLU(),
+                                              nn.Linear(256,64),
+                                              nn.ReLU(),
+                                              nn.Linear(64,4))
+    def forward(self,input):
+        feature_map = self.main_model(input)
+        feature_map = feature_map.view(feature_map.shape[0],-1)
+        output = self.classifies_layer(feature_map)
+        return output
