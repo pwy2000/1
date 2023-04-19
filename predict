@@ -1,0 +1,23 @@
+import torch
+
+from my_flowers.dataset import val_dataset,train_dataset
+from my_flowers.model import Classifies_model
+
+
+def predict():
+    test_data, long = val_dataset(batchsize=200)
+
+    for i, (x, y) in enumerate(test_data):
+        break
+
+    model = Classifies_model()
+    model.load_state_dict(torch.load("C:/Users/master/Desktop/flowers_3/my_flowers/model_best.pt",
+                                     map_location=torch.device('cpu')))
+    print("测试集所有图片数：",len(x))
+    predict_label = model(x)
+    predict_label = torch.argmax(predict_label,1)
+    score = torch.sum(predict_label == y)/len(x)
+    print(f"预测准确度:{score*100}%")
+
+if __name__ == '__main__':
+    predict()
